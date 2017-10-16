@@ -11,6 +11,11 @@
 struct lldeque;
 
 /*
+ * Iterator structure for iterating through a linked list-based deque.
+ */
+struct lldeque_iterator;
+
+/*
  * Creates a new, empty deque.
  */
 struct lldeque* lldeque_create();
@@ -58,5 +63,49 @@ int lldeque_remove_front(struct lldeque* deque);
  * Removes the back element from a deque and returns its value.
  */
 int lldeque_remove_back(struct lldeque* deque);
+
+/***********************
+ **
+ ** Iterator interface
+ **
+ ***********************/
+
+/*
+ * Allocates a new deque iterator and initializes it to the front element of
+ * the given deque.
+ */
+struct lldeque_iterator* lldeque_iterator_create(struct lldeque* deque);
+
+/*
+ * Frees the memory associated with an iterator.
+ */
+void lldeque_iterator_free(struct lldeque_iterator* iter);
+
+/*
+ * Returns 0 if there are no more elements to move to in the deque or 1 if
+ * there is at least one more element accessible via next().
+ */
+int lldeque_iterator_has_next(struct lldeque_iterator* iter);
+
+/*
+ * Moves the iterator to the next element in thge deque and returns its value.
+ */
+int lldeque_iterator_next(struct lldeque_iterator* iter);
+
+/*
+ * Removes the element from the deque currently pointed to by iter.
+ */
+void lldeque_iterator_remove(struct lldeque_iterator* iter);
+
+/*
+ * Inserts a new element with the specified value into the deque at the
+ * position after the element currently pointed to by iter.
+ */
+void lldeque_iterator_insert(struct lldeque_iterator* iter, int value);
+
+/*
+ * Updates the element currently pointed to by iter to the specified value.
+ */
+void lldeque_iterator_update(struct lldeque_iterator* iter, int value);
 
 #endif

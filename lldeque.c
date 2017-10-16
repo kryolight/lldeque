@@ -18,6 +18,12 @@ struct lldeque {
 };
 
 
+struct lldeque_iterator {
+  struct lldeque* deque;
+  struct link* curr;
+};
+
+
 struct lldeque* lldeque_create() {
   struct lldeque* deque = malloc(sizeof(struct lldeque));
   assert(deque);
@@ -119,4 +125,58 @@ int lldeque_remove_front(struct lldeque* deque) {
 int lldeque_remove_back(struct lldeque* deque) {
   assert(deque && !lldeque_isempty(deque));
   return _lldeque_remove_link(deque->back_sentinel->prev);
+}
+
+
+/***********************
+ **
+ ** Iterator interface
+ **
+ ***********************/
+
+struct lldeque_iterator* lldeque_iterator_create(struct lldeque* deque) {
+  assert(deque);
+  struct lldeque_iterator* iter = malloc(sizeof(struct lldeque_iterator));
+  assert(iter);
+  iter->deque = deque;
+  iter->curr = deque->front_sentinel;
+  return iter;
+}
+
+
+void lldeque_iterator_free(struct lldeque_iterator* iter) {
+  assert(iter);
+  free(iter);
+}
+
+
+int lldeque_iterator_has_next(struct lldeque_iterator* iter) {
+  assert(iter);
+  return iter->curr->next != iter->deque->back_sentinel;
+}
+
+
+int lldeque_iterator_next(struct lldeque_iterator* iter) {
+  assert(iter && lldeque_iterator_has_next(iter));
+  iter->curr = iter->curr->next;
+  return iter->curr->value;
+}
+
+
+void lldeque_iterator_remove(struct lldeque_iterator* iter) {
+  assert(iter && iter->curr != iter->deque->front_sentinel);
+  iter->curr = iter->curr->prev;
+  _lldeque_remove_link(iter->curr->next);
+}
+
+
+void lldeque_iterator_insert(struct lldeque_iterator* iter, int value) {
+  assert(iter);
+  _lldeque_add_before(iter->curr->next, value);
+}
+
+
+void lldeque_iterator_update(struct lldeque_iterator* iter, int value) {
+  assert(iter && iter->curr != iter->deque->front_sentinel);
+  iter->curr->value = value;
 }
