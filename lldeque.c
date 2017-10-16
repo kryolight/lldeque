@@ -64,6 +64,12 @@ void _lldeque_add_before(struct link* link, int value) {
   struct link* new_link = malloc(sizeof(struct link));
   assert(new_link);
 
+  new_link->value = value;
+  new_link->next = link;
+  new_link->prev = link->prev;
+
+  link->prev->next = new_link;
+  link->prev = new_link;
 }
 
 
@@ -95,7 +101,11 @@ int _lldeque_remove_link(struct link* link) {
   assert(link);
 
   int value = link->value;
-  
+
+  link->prev->next = link->next;
+  link->next->prev = link->prev;
+  free(link);
+
   return value;
 }
 
